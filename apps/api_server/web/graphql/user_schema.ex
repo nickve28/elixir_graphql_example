@@ -39,6 +39,7 @@ defmodule ApiServer.UserSchema do
 
   end
 
+
   defmodule ApiServer.Schema.Query do
     def type() do
       %ObjectType{
@@ -49,6 +50,17 @@ defmodule ApiServer.UserSchema do
             type: ApiServer.Schema.User,
             args: %{id: %{type: %ID{}, description: "Unique user identifier"}},
             resolve: &get_user/3
+          },
+          update_user: %{
+            type: ApiServer.Schema.User,
+            args: %{
+              id: %{
+                type: %NonNull{ofType: %ID{}},
+                description: "The id of the user to update"
+              },
+              name: %{type: %String{}, description: "The new username"}
+            },
+            resolve: &update_user/3
           }
         }
       }
@@ -58,12 +70,10 @@ defmodule ApiServer.UserSchema do
       Repositories.User.find_by_id(id)
     end
 
-    def get_user(_source, _args, _info) do
-      %{
-        code: 400
-      }
+    def update_user(_source, %{id: id} = user, _info) do
+      payload = Map.drop(user, [:id])
+      Repositories.User.update(id, payload)
     end
-
   end
 
   def schema() do

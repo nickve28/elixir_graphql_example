@@ -9,6 +9,7 @@ defmodule ApiServer do
     children = [
       # Start the endpoint when the application starts
       supervisor(ApiServer.Endpoint, []),
+      worker(ApiServer.Repositories.User, [])
       # Here you could define other workers and supervisors as children
       # worker(ApiServer.Worker, [arg1, arg2, arg3]),
     ]
